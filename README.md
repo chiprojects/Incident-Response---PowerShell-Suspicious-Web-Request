@@ -65,7 +65,7 @@ The suspicious web request was triggered on 1 device: "windows-target-1" by 1 us
 
 ### 2. Searched the `DeviceProcessEvents` Table a Second Time
 
-Searched for instances where the scripts: `eicar.ps1`, `portscan.ps1`, `pwncrypt.ps1`, `exfiltratedata.ps1` were successfully executed. It was later discovered that all 4 scripts were indeed.
+Searched for instances where the scripts: `eicar.ps1`, `portscan.ps1`, `pwncrypt.ps1`, `exfiltratedata.ps1` were successfully executed. It was later discovered that all 4 scripts were indeed executed.
 
 **Query used to locate events:**
 
@@ -86,7 +86,8 @@ Summarized by Count:
 Device: `windows-target-1` was isolated in Microsoft Defender for Endpoint, and an antimalware scan was run to ensure no malware was present.
 
 **Ex. 1: Device: windows-target-1:**
-![image](https://github.com/user-attachments/assets/cc6460f8-c4bb-4575-86ba-b26be8c531b9)
+
+![image](https://github.com/user-attachments/assets/9c4ee8a5-f2a5-4e02-9537-57f855ba6b39)
 
 
 ---
@@ -105,7 +106,9 @@ Enhanced endpoint monitoring for script execution activities.
 
 Reviewed and completed write-up for incident resolution. Finalized reporting and closed out the incident in Microsoft Sentinel as a true positive.
 
-![image](https://github.com/user-attachments/assets/5e6c7a40-2dba-4bae-b12c-8a943c56c7b7)
+
+![image](https://github.com/user-attachments/assets/c50d6637-4749-4628-ae4e-0a2930a77747)
+
 
 
 
